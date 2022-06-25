@@ -6,7 +6,7 @@ use std::num::FpCategory::{Infinite, Nan};
 macro_rules! _impl_ty {
     ($base:ty, $new:ident) => {
         #[allow(non_camel_case_types)]
-        #[derive(PartialEq, PartialOrd, Clone, Copy)]
+        #[derive(Default, PartialEq, PartialOrd, Clone, Copy)]
         pub struct $new {
             x: $base,
         }
