@@ -3,7 +3,7 @@ use std::fmt::Display;
 use std::num::FpCategory::*;
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub struct ff64 {
     x: f64,
 }
@@ -43,4 +43,14 @@ impl From<ff64> for f64 {
     fn from(x: ff64) -> Self {
         x.x
     }
+}
+
+#[macro_export]
+macro_rules! ff64 {
+    ($x:literal) => {
+        $crate::ff64::from($x)
+    };
+    ($x:expr) => {
+        $crate::ff64::from($x)
+    };
 }
