@@ -61,7 +61,8 @@ const F32_COMMON_FLOATS: &'static [f32] = &[
 #[test]
 fn f64_common_floats() {
     for &x in F64_COMMON_FLOATS {
-        let _ = ff64!(x);
+        let fx = ff64!(x);
+        assert_eq!(x, fx.get())
     }
 }
 
@@ -86,7 +87,8 @@ fn f64_neg_inf() {
 #[test]
 fn f32_common_floats() {
     for &x in F32_COMMON_FLOATS {
-        let _ = ff32!(x);
+        let fx = ff32!(x);
+        assert_eq!(x, fx.get())
     }
 }
 

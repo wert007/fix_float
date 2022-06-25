@@ -22,6 +22,10 @@ macro_rules! _impl_ty {
 
                 $new { x }
             }
+
+            pub fn get(&self) -> $base {
+                self.x
+            }
         }
 
         impl Eq for $new {}
