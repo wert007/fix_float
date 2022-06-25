@@ -2,7 +2,7 @@ use fix_float::*;
 use std::collections::HashMap;
 
 #[test]
-fn std() {
+fn simple() {
     let mut h: HashMap<ff64, u32> = HashMap::new();
 
     h.insert(ff64!(0.0), 42);
