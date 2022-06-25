@@ -23,7 +23,7 @@ macro_rules! _impl_ty {
                 $new { x }
             }
 
-            pub fn get(&self) -> $base {
+            pub fn unfix(&self) -> $base {
                 self.x
             }
         }
