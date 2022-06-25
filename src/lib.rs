@@ -1,9 +1,10 @@
 use std::cmp::Ordering;
-use std::fmt::Display;
-use std::num::FpCategory::*;
+use std::fmt::{Debug, Display, Formatter};
+use std::hash::{Hash, Hasher};
+use std::num::FpCategory::{Infinite, Nan};
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
+#[derive(PartialEq, PartialOrd, Clone, Copy)]
 pub struct ff64 {
     x: f64,
 }
@@ -27,9 +28,25 @@ impl Ord for ff64 {
     }
 }
 
-impl Display for ff64 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Debug for ff64 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "fix {}", self.x)
+    }
+}
+
+impl Display for ff64 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "fix {}", self.x)
+    }
+}
+
+impl Hash for ff64 {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        if self.x == 0.0 {
+            (0.0 as f64).to_bits().hash(state);
+        } else {
+            self.x.to_bits().hash(state)
+        }
     }
 }
 
