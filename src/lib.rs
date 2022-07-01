@@ -39,6 +39,10 @@ macro_rules! _impl_ty {
                     }),
                 }
             }
+
+            fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+                f.pad(&format!("fix {}", self.x))
+            }
         }
 
         impl Eq for $new {}
@@ -51,13 +55,13 @@ macro_rules! _impl_ty {
 
         impl Debug for $new {
             fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-                write!(f, "fix {}", self.x)
+                self.fmt(f)
             }
         }
 
         impl Display for $new {
             fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-                write!(f, "fix {}", self.x)
+                self.fmt(f)
             }
         }
 
