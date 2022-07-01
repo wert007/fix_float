@@ -13,12 +13,13 @@ pub enum ErrorTryFrom {
 macro_rules! _impl_ty {
     ($base:ty, $new:ident) => {
         #[allow(non_camel_case_types)]
-        #[derive(Default, PartialEq, PartialOrd, Clone, Copy)]
+        #[derive(Default, Clone, Copy)]
         pub struct $new {
             x: $base,
         }
 
         impl $new {
+            #[inline]
             fn is_fixable(x: $base) -> Option<ErrorTryFrom> {
                 match x.classify() {
                     Nan => Some(ErrorTryFrom::CannotFixNan),
@@ -27,7 +28,8 @@ macro_rules! _impl_ty {
                 }
             }
 
-            pub fn try_from(x: $base) -> Result<$new, ErrorTryFrom> {
+            #[inline]
+            fn try_from(x: $base) -> Result<$new, ErrorTryFrom> {
                 match Self::is_fixable(x) {
                     Some(err) => Err(err),
                     None => Ok($new {
@@ -40,16 +42,44 @@ macro_rules! _impl_ty {
                 }
             }
 
+            #[inline]
+            pub fn my_partial_cmp(lhs: &$new, rhs: &$new) -> Option<Ordering> {
+                Some(lhs.x.total_cmp(&rhs.x))
+                // lhs.x.partial_cmp(&rhs.x)
+            }
+
+            #[inline]
+            pub fn my_cmp(lhs: &$new, rhs: &$new) -> Ordering {
+                lhs.x.total_cmp(&rhs.x)
+                // lhs.x.partial_cmp(&rhs.x).unwrap()
+            }
+
+            #[inline]
             fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
                 f.pad(&format!("fix {}", self.x))
             }
         }
 
+        impl PartialEq for $new {
+            #[inline]
+            fn eq(&self, other: &Self) -> bool {
+                self.x == other.x
+            }
+        }
+
         impl Eq for $new {}
 
+        impl PartialOrd for $new {
+            #[inline]
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                Self::my_partial_cmp(self, other)
+            }
+        }
+
         impl Ord for $new {
+            #[inline]
             fn cmp(&self, other: &Self) -> Ordering {
-                self.partial_cmp(other).unwrap()
+                Self::my_cmp(self, other)
             }
         }
 
@@ -72,6 +102,7 @@ macro_rules! _impl_ty {
         }
 
         impl From<$new> for $base {
+            #[inline]
             fn from(x: $new) -> Self {
                 x.x
             }
@@ -80,6 +111,7 @@ macro_rules! _impl_ty {
         impl TryFrom<$base> for $new {
             type Error = ErrorTryFrom;
 
+            #[inline]
             fn try_from(value: $base) -> Result<Self, Self::Error> {
                 Self::try_from(value)
             }
@@ -88,6 +120,7 @@ macro_rules! _impl_ty {
         impl Deref for $new {
             type Target = $base;
 
+            #[inline]
             fn deref(&self) -> &Self::Target {
                 &self.x
             }
@@ -249,12 +282,25 @@ mod tests {
 
     #[test]
     fn eq_fuzzy() {
-        for _ in 0..1000 {
+        for _ in 0..10000 {
             let random_float = rand::random();
             let a = ff64!(random_float);
             let b = ff64!(random_float);
 
             assert_eq!(a, b);
+        }
+    }
+
+    #[test]
+    fn ord_fuzzy() {
+        for _ in 0..10000 {
+            let a = rand::random();
+            let b = rand::random();
+            let fa = ff64!(a);
+            let fb = ff64!(b);
+
+            assert_eq!(a.partial_cmp(&b), fa.partial_cmp(&fb));
+            assert_eq!(a.partial_cmp(&b).unwrap(), fa.cmp(&fb));
         }
     }
 
