@@ -4,6 +4,12 @@ use std::hash::{Hash, Hasher};
 use std::num::FpCategory::{Infinite, Nan};
 use std::ops::Deref;
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum ErrorTryFrom {
+    CannotFixNan,
+    CannotFixInfinite,
+}
+
 macro_rules! _impl_ty {
     ($base:ty, $new:ident) => {
         #[allow(non_camel_case_types)]
@@ -13,15 +19,19 @@ macro_rules! _impl_ty {
         }
 
         impl $new {
-            pub fn from(x: $base) -> $new {
+            fn is_fixable(x: $base) -> Option<ErrorTryFrom> {
                 match x.classify() {
-                    Nan | Infinite => {
-                        panic!("Cannot create `fix {}` from {}", stringify!($base), x)
-                    }
-                    _ => {}
+                    Nan => Some(ErrorTryFrom::CannotFixNan),
+                    Infinite => Some(ErrorTryFrom::CannotFixInfinite),
+                    _ => None,
                 }
+            }
 
-                $new { x }
+            pub fn try_from(x: $base) -> Result<$new, ErrorTryFrom> {
+                match Self::is_fixable(x) {
+                    None => Ok($new { x }),
+                    Some(err) => Err(err),
+                }
             }
         }
 
@@ -55,15 +65,17 @@ macro_rules! _impl_ty {
             }
         }
 
-        impl From<$base> for $new {
-            fn from(x: $base) -> Self {
-                $new::from(x)
-            }
-        }
-
         impl From<$new> for $base {
             fn from(x: $new) -> Self {
                 x.x
+            }
+        }
+
+        impl TryFrom<$base> for $new {
+            type Error = ErrorTryFrom;
+
+            fn try_from(value: $base) -> Result<Self, Self::Error> {
+                Self::try_from(value)
             }
         }
 
@@ -78,10 +90,10 @@ macro_rules! _impl_ty {
         #[macro_export]
         macro_rules! $new {
             ($x:literal) => {
-                $crate::$new::from($x)
+                $crate::$new::try_from($x).unwrap()
             };
             ($x:expr) => {
-                $crate::$new::from($x)
+                $crate::$new::try_from($x).unwrap()
             };
         }
     };
