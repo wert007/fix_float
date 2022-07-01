@@ -43,15 +43,13 @@ macro_rules! _impl_ty {
             }
 
             #[inline]
-            pub fn my_partial_cmp(lhs: &$new, rhs: &$new) -> Option<Ordering> {
+            fn my_partial_cmp(lhs: &$new, rhs: &$new) -> Option<Ordering> {
                 Some(lhs.x.total_cmp(&rhs.x))
-                // lhs.x.partial_cmp(&rhs.x)
             }
 
             #[inline]
-            pub fn my_cmp(lhs: &$new, rhs: &$new) -> Ordering {
+            fn my_cmp(lhs: &$new, rhs: &$new) -> Ordering {
                 lhs.x.total_cmp(&rhs.x)
-                // lhs.x.partial_cmp(&rhs.x).unwrap()
             }
 
             #[inline]
@@ -62,6 +60,7 @@ macro_rules! _impl_ty {
 
         impl PartialEq for $new {
             #[inline]
+            #[must_use]
             fn eq(&self, other: &Self) -> bool {
                 self.x == other.x
             }
@@ -71,6 +70,7 @@ macro_rules! _impl_ty {
 
         impl PartialOrd for $new {
             #[inline]
+            #[must_use]
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
                 Self::my_partial_cmp(self, other)
             }
@@ -78,6 +78,7 @@ macro_rules! _impl_ty {
 
         impl Ord for $new {
             #[inline]
+            #[must_use]
             fn cmp(&self, other: &Self) -> Ordering {
                 Self::my_cmp(self, other)
             }
@@ -103,6 +104,7 @@ macro_rules! _impl_ty {
 
         impl From<$new> for $base {
             #[inline]
+            #[must_use]
             fn from(x: $new) -> Self {
                 x.x
             }
@@ -112,6 +114,7 @@ macro_rules! _impl_ty {
             type Error = ErrorTryFrom;
 
             #[inline]
+            #[must_use]
             fn try_from(value: $base) -> Result<Self, Self::Error> {
                 Self::try_from(value)
             }
@@ -121,6 +124,7 @@ macro_rules! _impl_ty {
             type Target = $base;
 
             #[inline]
+            #[must_use]
             fn deref(&self) -> &Self::Target {
                 &self.x
             }
