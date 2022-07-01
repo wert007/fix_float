@@ -29,8 +29,14 @@ macro_rules! _impl_ty {
 
             pub fn try_from(x: $base) -> Result<$new, ErrorTryFrom> {
                 match Self::is_fixable(x) {
-                    None => Ok($new { x }),
                     Some(err) => Err(err),
+                    None => Ok($new {
+                        x: if (x == (0.0 as $base)) {
+                            0.0 as $base
+                        } else {
+                            x
+                        },
+                    }),
                 }
             }
         }
@@ -57,11 +63,7 @@ macro_rules! _impl_ty {
 
         impl Hash for $new {
             fn hash<H: Hasher>(&self, state: &mut H) {
-                if self.x == 0.0 {
-                    (0.0 as $base).to_bits().hash(state);
-                } else {
-                    self.x.to_bits().hash(state)
-                }
+                self.x.to_bits().hash(state)
             }
         }
 
