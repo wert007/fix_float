@@ -275,6 +275,16 @@ mod tests {
     }
 
     #[test]
+    fn mem_f64() {
+        assert_eq!(std::mem::size_of::<f64>(), std::mem::size_of::<ff64>())
+    }
+
+    #[test]
+    fn mem_f32() {
+        assert_eq!(std::mem::size_of::<f32>(), std::mem::size_of::<ff32>())
+    }
+
+    #[test]
     fn eq_zero() {
         let a = ff64!(0.0);
         let b = ff64!(0.0);
