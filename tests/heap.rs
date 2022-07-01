@@ -46,7 +46,7 @@ fn range() {
     let mut index = 1000;
 
     while index >= 0 {
-        assert_eq!(heap.pop().unwrap().unfix(), index as f64);
+        assert_eq!(*heap.pop().unwrap(), index as f64);
         index -= 1;
     }
 

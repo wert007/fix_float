@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 use std::fmt::{Debug, Display, Formatter};
 use std::hash::{Hash, Hasher};
 use std::num::FpCategory::{Infinite, Nan};
+use std::ops::Deref;
 
 macro_rules! _impl_ty {
     ($base:ty, $new:ident) => {
@@ -21,10 +22,6 @@ macro_rules! _impl_ty {
                 }
 
                 $new { x }
-            }
-
-            pub fn unfix(&self) -> $base {
-                self.x
             }
         }
 
@@ -67,6 +64,14 @@ macro_rules! _impl_ty {
         impl From<$new> for $base {
             fn from(x: $new) -> Self {
                 x.x
+            }
+        }
+
+        impl Deref for $new {
+            type Target = $base;
+
+            fn deref(&self) -> &Self::Target {
+                &self.x
             }
         }
 
