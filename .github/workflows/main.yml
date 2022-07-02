@@ -26,6 +26,17 @@ jobs:
           toolchain: stable
       - run: cargo test
 
+  check_readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo install cargo-readme
+      - run: cargo readme > README.test.md
+      - run: diff README.md README.test.md
+
   clippy:
     runs-on: ubuntu-latest
     steps:
