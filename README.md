@@ -50,7 +50,7 @@ fn double_triage(v: Vec<f64>) -> (Vec<ff64>, usize, usize) {
 		match ff64::try_from(elem) {
 			Ok(x) => vff64.push(x),
 			Err(ErrorTryFrom::CannotFixNan) => nb_nan += 1,
-			Err(ErrorTryFrom::CannotFixInfinite) => nb_infinity += 1,
+			Err(ErrorTryFrom::CannotFixInfinity) => nb_infinity += 1,
 		}
 	}
 
@@ -90,5 +90,3 @@ let map: HashMap<ff64, ()> = HashMap::new();
 let set: HashSet<ff64> = HashSet::new();
 let heap: BinaryHeap<ff64> = BinaryHeap::new();
 ```
-
-

@@ -4,139 +4,182 @@ use std::hash::{Hash, Hasher};
 use std::num::FpCategory::{Infinite, Nan};
 use std::ops::Deref;
 
+/// Error type when try_from is invoked
 #[derive(Debug, PartialEq, Eq)]
 pub enum ErrorTryFrom {
+    /// Happens when the value given is Nan (any type of Nan)
     CannotFixNan,
-    CannotFixInfinite,
+    /// Happens when the value given is Infinity (any type of Infinity)
+    CannotFixInfinity,
 }
 
 macro_rules! _impl_ty {
     ($base:ty, $new:ident) => {
-        #[allow(non_camel_case_types)]
-        #[derive(Default, Clone, Copy)]
-        pub struct $new {
-            x: $base,
-        }
+        doc_comment! {
+            concat!(
+        "Abstract wrapper for fix ", stringify!($base), ", or ", stringify!($new), " for short.
 
-        impl $new {
-            #[inline]
-            fn is_fixable(x: $base) -> Option<ErrorTryFrom> {
-                match x.classify() {
-                    Nan => Some(ErrorTryFrom::CannotFixNan),
-                    Infinite => Some(ErrorTryFrom::CannotFixInfinite),
-                    _ => None,
+This wrapper implements:
+ - Default
+ - Copy
+ - Clone
+ - Debug
+ - Display
+ - PartialEq
+ - Eq
+ - PartialOrd
+ - Ord
+ - Hash
+ - Deref<Target = ", stringify!($base), ">
+ - TryFrom", "<", stringify!($base), ">
+
+```
+# use fix_float::*;
+# fn main() {
+	let x: ", stringify!($base), " =  42.42;
+	let a: ", stringify!($new), " = ", stringify!($new), "::try_from(x).unwrap();
+	let b: ", stringify!($new), " = x.try_into().unwrap();
+	let c: ", stringify!($new), " = ", stringify!($new), "!(x);
+# }
+```
+",
+            ),
+
+            #[allow(non_camel_case_types)]
+            #[derive(Default, Clone, Copy)]
+            pub struct $new {
+                x: $base,
+            }
+
+            impl $new {
+                #[inline]
+                fn is_fixable(x: $base) -> Option<ErrorTryFrom> {
+                    match x.classify() {
+                        Nan => Some(ErrorTryFrom::CannotFixNan),
+                        Infinite => Some(ErrorTryFrom::CannotFixInfinity),
+                        _ => None,
+                    }
+                }
+
+                #[inline]
+                fn try_from(x: $base) -> Result<$new, ErrorTryFrom> {
+                    match Self::is_fixable(x) {
+                        Some(err) => Err(err),
+                        None => Ok($new {
+                            x: if (x == (0.0 as $base)) {
+                                0.0 as $base
+                            } else {
+                                x
+                            },
+                        }),
+                    }
+                }
+
+                #[inline]
+                fn my_partial_cmp(lhs: &$new, rhs: &$new) -> Option<Ordering> {
+                    Some(lhs.x.total_cmp(&rhs.x))
+                }
+
+                #[inline]
+                fn my_cmp(lhs: &$new, rhs: &$new) -> Ordering {
+                    lhs.x.total_cmp(&rhs.x)
+                }
+
+                #[inline]
+                fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+                    f.pad(&format!("fix {}", self.x))
                 }
             }
 
-            #[inline]
-            fn try_from(x: $base) -> Result<$new, ErrorTryFrom> {
-                match Self::is_fixable(x) {
-                    Some(err) => Err(err),
-                    None => Ok($new {
-                        x: if (x == (0.0 as $base)) {
-                            0.0 as $base
-                        } else {
-                            x
-                        },
-                    }),
+            impl PartialEq for $new {
+                #[inline]
+                #[must_use]
+                fn eq(&self, other: &Self) -> bool {
+                    self.x == other.x
                 }
             }
 
-            #[inline]
-            fn my_partial_cmp(lhs: &$new, rhs: &$new) -> Option<Ordering> {
-                Some(lhs.x.total_cmp(&rhs.x))
+            impl Eq for $new {}
+
+            impl PartialOrd for $new {
+                #[inline]
+                #[must_use]
+                fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                    Self::my_partial_cmp(self, other)
+                }
             }
 
-            #[inline]
-            fn my_cmp(lhs: &$new, rhs: &$new) -> Ordering {
-                lhs.x.total_cmp(&rhs.x)
+            impl Ord for $new {
+                #[inline]
+                #[must_use]
+                fn cmp(&self, other: &Self) -> Ordering {
+                    Self::my_cmp(self, other)
+                }
             }
 
-            #[inline]
-            fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-                f.pad(&format!("fix {}", self.x))
+            impl Debug for $new {
+                fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+                    self.fmt(f)
+                }
             }
-        }
 
-        impl PartialEq for $new {
-            #[inline]
-            #[must_use]
-            fn eq(&self, other: &Self) -> bool {
-                self.x == other.x
+            impl Display for $new {
+                fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+                    self.fmt(f)
+                }
             }
-        }
 
-        impl Eq for $new {}
-
-        impl PartialOrd for $new {
-            #[inline]
-            #[must_use]
-            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-                Self::my_partial_cmp(self, other)
+            impl Hash for $new {
+                fn hash<H: Hasher>(&self, state: &mut H) {
+                    self.x.to_bits().hash(state)
+                }
             }
-        }
 
-        impl Ord for $new {
-            #[inline]
-            #[must_use]
-            fn cmp(&self, other: &Self) -> Ordering {
-                Self::my_cmp(self, other)
+            impl From<$new> for $base {
+                #[inline]
+                #[must_use]
+                fn from(x: $new) -> Self {
+                    x.x
+                }
             }
-        }
 
-        impl Debug for $new {
-            fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-                self.fmt(f)
+            impl TryFrom<$base> for $new {
+                type Error = ErrorTryFrom;
+
+                #[inline]
+                fn try_from(value: $base) -> Result<Self, Self::Error> {
+                    Self::try_from(value)
+                }
             }
-        }
 
-        impl Display for $new {
-            fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-                self.fmt(f)
+            impl Deref for $new {
+                type Target = $base;
+
+                #[inline]
+                #[must_use]
+                fn deref(&self) -> &Self::Target {
+                    &self.x
+                }
             }
-        }
 
-        impl Hash for $new {
-            fn hash<H: Hasher>(&self, state: &mut H) {
-                self.x.to_bits().hash(state)
+            doc_comment!{
+                concat!("Macro that does try_from and unwraps it.
+
+`", stringify!($new), "!(x)` <=> `fix_float::", stringify!($new), "::try_from(x).unwrap()`
+
+You should use this macro when you are sure that you are not having Nan or Infinity. Otherwise, it will panic.
+
+				"),
+                #[macro_export]
+                macro_rules! $new {
+                    ($x:literal) => {
+                        $crate::$new::try_from($x).unwrap()
+                    };
+                    ($x:expr) => {
+                        $crate::$new::try_from($x).unwrap()
+                    };
+                }
             }
-        }
-
-        impl From<$new> for $base {
-            #[inline]
-            #[must_use]
-            fn from(x: $new) -> Self {
-                x.x
-            }
-        }
-
-        impl TryFrom<$base> for $new {
-            type Error = ErrorTryFrom;
-
-            #[inline]
-            fn try_from(value: $base) -> Result<Self, Self::Error> {
-                Self::try_from(value)
-            }
-        }
-
-        impl Deref for $new {
-            type Target = $base;
-
-            #[inline]
-            #[must_use]
-            fn deref(&self) -> &Self::Target {
-                &self.x
-            }
-        }
-
-        #[macro_export]
-        macro_rules! $new {
-            ($x:literal) => {
-                $crate::$new::try_from($x).unwrap()
-            };
-            ($x:expr) => {
-                $crate::$new::try_from($x).unwrap()
-            };
         }
     };
 }
@@ -368,10 +411,10 @@ mod tests {
     fn try_from_inf() {
         let a = ff64::try_from(f64::INFINITY);
         assert!(a.is_err());
-        assert_eq!(a.unwrap_err(), ErrorTryFrom::CannotFixInfinite);
+        assert_eq!(a.unwrap_err(), ErrorTryFrom::CannotFixInfinity);
 
         let b = ff64::try_from(f64::NEG_INFINITY);
         assert!(b.is_err());
-        assert_eq!(b.unwrap_err(), ErrorTryFrom::CannotFixInfinite);
+        assert_eq!(b.unwrap_err(), ErrorTryFrom::CannotFixInfinity);
     }
 }
