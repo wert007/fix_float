@@ -1,7 +1,6 @@
 use std::iter::zip;
 
 use fix_float::*;
-use rand;
 
 fn sort_vec_wrapper(s: usize) {
     let mut vec: Vec<u32> = Vec::with_capacity(s);

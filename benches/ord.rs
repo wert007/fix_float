@@ -1,5 +1,4 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use rand;
 
 fn bench_approaches(c: &mut Criterion) {
     let mut group = c.benchmark_group("ord approaches");

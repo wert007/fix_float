@@ -2,7 +2,6 @@ use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use fix_float::*;
 use rand::prelude::SliceRandom;
 use rand::{self, SeedableRng};
-use rand_chacha;
 
 const LOG_SCALE: &[f64] = &[1.0, 2.0, 5.0, 7.5];
 
@@ -33,7 +32,7 @@ fn bench_approaches(c: &mut Criterion) {
                     v.shuffle(&mut rand_chacha::ChaCha8Rng::seed_from_u64(42));
                     v
                 },
-                |mut v| v.sort_by(|a, b| a.total_cmp(&b)),
+                |mut v| v.sort_by(|a, b| a.total_cmp(b)),
             );
         });
 
@@ -47,7 +46,7 @@ fn bench_approaches(c: &mut Criterion) {
                         v.shuffle(&mut rand_chacha::ChaCha8Rng::seed_from_u64(42));
                         v
                     },
-                    |mut v| v.sort_by(|a, b| a.partial_cmp(&b).unwrap()),
+                    |mut v| v.sort_by(|a, b| a.partial_cmp(b).unwrap()),
                 );
             },
         );

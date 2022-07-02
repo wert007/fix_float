@@ -114,7 +114,6 @@ macro_rules! _impl_ty {
             type Error = ErrorTryFrom;
 
             #[inline]
-            #[must_use]
             fn try_from(value: $base) -> Result<Self, Self::Error> {
                 Self::try_from(value)
             }
@@ -148,9 +147,8 @@ _impl_ty!(f32, ff32);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand;
 
-    const F64_COMMON_FLOATS: &'static [f64] = &[
+    const F64_COMMON_FLOATS: &[f64] = &[
         0.0,
         1.0,
         -1.0,
@@ -179,7 +177,7 @@ mod tests {
         std::f64::consts::TAU,
     ];
 
-    const F32_COMMON_FLOATS: &'static [f32] = &[
+    const F32_COMMON_FLOATS: &[f32] = &[
         0.0,
         1.0,
         -1.0,
