@@ -7,7 +7,7 @@ description = "Fixed floating types that allows useful trait implementations and
 license = "MIT"
 repository = "https://github.com/FauconFan/fix_float"
 keywords = ["ff64", "ff32", "Ord", "Hash", "total_cmp"]
-categoriess = ["data-structures", "encoding"]
+categories = ["data-structures", "encoding"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

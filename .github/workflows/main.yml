@@ -79,13 +79,12 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    container:
-      image: xd009642/tarpaulin:develop-nightly
-      options: --security-opt seccomp=unconfined
     steps:
       - uses: actions/checkout@v2
-      - name: Generate code coverage
-        run: cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
-      - uses: codecov/codecov-action@v2
+      - uses: actions-rs/toolchain@v1
         with:
-          fail_ci_if_error: true
+          toolchain: stable
+      - run: cargo install cargo-tarpaulin
+      - run: cargo tarpaulin --coveralls "$COVERALLS_API_KEY"
+        env:
+          COVERALLS_API_KEY: ${{ secrets.COVERALLS_API_KEY }}
