@@ -19,8 +19,6 @@ serde = { version = "1.0", optional = true, features = ["derive"] }
 rand = "0.8.5"
 rand_chacha = "0.3"
 serde_json = "1.0"
-
-[bench-dependencies]
 criterion = { version = "0.3", features = ["html_reports"] }
 
 [badges]
