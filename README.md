@@ -2,36 +2,40 @@
 
 Default float types in rust doesn't implement the standard traits Ord and Hash, which is theoretically correct but very annoying. This crate tries to handle some restriction on float values in order to finally implement these traits.
 
-Because we are talking about floating numbers, comparing and hashing are subtle. The first attempt is to create a wrapper around floating numbers named ff64 and ff32, that prohibites edge values such as Nan (Not A Number) and +/- Infinite. This restriction is quite good because we would like to handle these edge cases seperataly and then concentrate on the 'happy path'.
+Because we are talking about floating numbers, comparing and hashing are subtle. We create a wrapper around floating numbers named ff64 and ff32, that prohibites edge values such as Nan (Not A Number) and +/- Infinite. This restriction is quite good because we would like to handle these edge cases seperataly and then concentrate on the 'happy path'.
 
-## Demo
+A fix float is a floating number that can be fixed. In this paradigm, every normal, subnormal or zero number can be fixed, when Nan (Not A Number) and Infinity can't.
+
+Furthermore, not a single mathematical operation can be done, this is to prevent any forbidden operations that could lead to Nan or Infinity, such as `(-1f64).sqrt()` or `0f64.recip()`.
+
+A negative zero (-0), is transformed into a positive zero.
+
+## Getting started
 
 ```rust
-use fix_float::*;
-use rand;
+let a = ff64!(42.42);
+let b = ff64!(0f64);
+```
 
-fn main() {
-	let mut v: Vec<ff64> = vec![];
+The three following snippets should panic!
+```rust
+// NAN
+let a = ff64!(0f64 / 0f64);
+```
 
-	for _ in 0..10 {
-		v.push(ff64!(rand::random::<f64>()));
-	}
+```rust
+// INFINITY
+let a = ff64!(1f64 / 0f64);
+```
 
-	println!("values:");
-	for &elem in &v {
-		println!("  {:.2}", *elem);
-	}
-
-	v.sort();
-
-	println!("values sorted:");
-	for &elem in &v {
-		println!("  {:.2}", *elem);
-	}
-}
+```rust
+// NEG_INFINITY
+let a = ff64!(-1f64 / 0f64);
 ```
 
 ## Examples
+
+### Separate edge-cases numbers and sort valid fix floating numbers.
 
 ```rust
 use fix_float::*;
@@ -62,23 +66,30 @@ fn double_triage(v: Vec<f64>) -> (Vec<ff64>, usize, usize) {
 #
 ```
 
-This should work fine!
+### Sort fix floating numbers
 ```rust
-let a = ff64!(42.42);
-let b = ff64!(0f64);
-```
+use fix_float::*;
+use rand;
 
-The three following snippets should panic!
-```rust
-let a = ff64!(f64::NAN);
-```
+fn main() {
+	let mut v: Vec<ff64> = vec![];
 
-```rust
-let a = ff64!(f64::INFINITY);
-```
+	for _ in 0..10 {
+		v.push(ff64!(rand::random::<f64>()));
+	}
 
-```rust
-let a = ff64!(f64::NEG_INFINITY);
+	println!("values:");
+	for &elem in &v {
+		println!("  {:.2}", *elem);
+	}
+
+	v.sort();
+
+	println!("values sorted:");
+	for &elem in &v {
+		println!("  {:.2}", *elem);
+	}
+}
 ```
 
 ## Useful Datastructures
