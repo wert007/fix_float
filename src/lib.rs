@@ -59,32 +59,32 @@
 //! //    .1: numbers of NAN
 //! //    .2: numbers of INFINITY (positive or negative)
 //! fn double_triage(v: Vec<f64>) -> (Vec<ff64>, usize, usize) {
-//! 	let mut vff64 = Vec::new();
-//! 	let mut nb_nan = 0;
-//! 	let mut nb_infinity = 0;
+//!     let mut vff64 = Vec::new();
+//!     let mut nb_nan = 0;
+//!     let mut nb_infinity = 0;
 //!
-//! 	for &elem in &v {
-//! 		match ff64::try_from(elem) {
-//! 			Ok(x) => vff64.push(x),
-//! 			Err(ErrorTryFrom::CannotFixNan) => nb_nan += 1,
-//! 			Err(ErrorTryFrom::CannotFixInfinity) => nb_infinity += 1,
-//! 		}
-//! 	}
+//!     for &elem in &v {
+//!         match ff64::try_from(elem) {
+//!             Ok(x) => vff64.push(x),
+//!             Err(ErrorTryFrom::CannotFixNan) => nb_nan += 1,
+//!             Err(ErrorTryFrom::CannotFixInfinity) => nb_infinity += 1,
+//!         }
+//!     }
 //!
-//! 	vff64.sort();
+//!     vff64.sort();
 //!
-//! 	(vff64, nb_nan, nb_infinity)
+//!     (vff64, nb_nan, nb_infinity)
 //! }
 //!
 //! # fn main() {
-//! # 	let v = vec![f64::NAN, 42.42, f64::INFINITY, 21.21, 84.84, f64::NAN, f64::NAN, f64::NEG_INFINITY];
-//! # 	let (sv, nb_nan, nb_infinity) = double_triage(v);
-//! # 	assert_eq!(nb_nan, 3);
-//! # 	assert_eq!(nb_infinity, 2);
-//! # 	assert_eq!(sv.len(), 3);
-//! # 	assert_eq!(*sv[0], 21.21);
-//! # 	assert_eq!(*sv[1], 42.42);
-//! # 	assert_eq!(*sv[2], 84.84);
+//! #     let v = vec![f64::NAN, 42.42, f64::INFINITY, 21.21, 84.84, f64::NAN, f64::NAN, f64::NEG_INFINITY];
+//! #     let (sv, nb_nan, nb_infinity) = double_triage(v);
+//! #     assert_eq!(nb_nan, 3);
+//! #     assert_eq!(nb_infinity, 2);
+//! #     assert_eq!(sv.len(), 3);
+//! #     assert_eq!(*sv[0], 21.21);
+//! #     assert_eq!(*sv[1], 42.42);
+//! #     assert_eq!(*sv[2], 84.84);
 //! # }
 //! ```
 //!
@@ -93,25 +93,25 @@
 //! use fix_float::*;
 //! use rand;
 //!
-//! fn main() {
-//! 	let mut v: Vec<ff64> = vec![];
+//! # fn main() {
+//! let mut v: Vec<ff64> = vec![];
 //!
-//! 	for _ in 0..10 {
-//! 		v.push(ff64!(rand::random::<f64>()));
-//! 	}
-//!
-//! 	println!("values:");
-//! 	for &elem in &v {
-//! 		println!("  {:.2}", *elem);
-//! 	}
-//!
-//! 	v.sort();
-//!
-//! 	println!("values sorted:");
-//! 	for &elem in &v {
-//! 		println!("  {:.2}", *elem);
-//! 	}
+//! for _ in 0..10 {
+//!     v.push(ff64!(rand::random::<f64>()));
 //! }
+//!
+//! println!("values:");
+//! for &elem in &v {
+//!     println!("  {:.2}", *elem);
+//! }
+//!
+//! v.sort();
+//!
+//! println!("values sorted:");
+//! for &elem in &v {
+//!     println!("  {:.2}", *elem);
+//! }
+//! # }
 //! ```
 //!
 //! # Useful Datastructures
