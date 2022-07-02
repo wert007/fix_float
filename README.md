@@ -1,4 +1,4 @@
-[![Workflow Status](https://github.com/FauconFan/fix_float/workflows/main/badge.svg)](https://github.com/FauconFan/fix_float/actions?query=workflow%3A%22main%22)
+[![Workflow Status](https://github.com/FauconFan/fix_float/actions/workflows/main.yml/badge.svg)](https://github.com/FauconFan/fix_float/actions?query=workflow%3A%22main%22)
 ![Maintenance](https://img.shields.io/badge/maintenance-experimental-blue.svg)
 
 # fix_float
@@ -66,7 +66,6 @@ fn double_triage(v: Vec<f64>) -> (Vec<ff64>, usize, usize) {
 	(vff64, nb_nan, nb_infinity)
 }
 
-#
 ```
 
 ### Sort fix floating numbers

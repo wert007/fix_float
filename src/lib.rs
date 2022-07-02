@@ -79,7 +79,6 @@
 //! # fn main() {
 //! # 	let v = vec![f64::NAN, 42.42, f64::INFINITY, 21.21, 84.84, f64::NAN, f64::NAN, f64::NEG_INFINITY];
 //! # 	let (sv, nb_nan, nb_infinity) = double_triage(v);
-//! #
 //! # 	assert_eq!(nb_nan, 3);
 //! # 	assert_eq!(nb_infinity, 2);
 //! # 	assert_eq!(sv.len(), 3);
