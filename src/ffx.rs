@@ -4,6 +4,9 @@ use std::hash::{Hash, Hasher};
 use std::num::FpCategory::{Infinite, Nan};
 use std::ops::Deref;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 /// Error type when try_from is invoked
 #[derive(Debug, PartialEq, Eq)]
 pub enum ErrorTryFrom {
@@ -47,6 +50,7 @@ This wrapper implements:
 
             #[allow(non_camel_case_types)]
             #[derive(Default, Clone, Copy)]
+			#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
             pub struct $new {
                 x: $base,
             }
@@ -416,5 +420,17 @@ mod tests {
         let b = ff64::try_from(f64::NEG_INFINITY);
         assert!(b.is_err());
         assert_eq!(b.unwrap_err(), ErrorTryFrom::CannotFixInfinity);
+    }
+
+    #[test]
+    #[cfg(feature = "serde")]
+    fn serde_json() {
+        let a = ff64!(42.42);
+
+        let json_a = serde_json::to_string(&a).unwrap();
+        let a_json_a: ff64 = serde_json::from_str(&json_a).unwrap();
+
+        assert_eq!(json_a, "{\"x\":42.42}");
+        assert_eq!(a, a_json_a);
     }
 }

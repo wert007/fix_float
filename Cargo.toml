@@ -13,11 +13,13 @@ categories = ["data-structures", "encoding"]
 
 [dependencies]
 doc-comment = "0.3"
+serde = { version = "1.0", optional = true, features = ["derive"] }
 
 [dev-dependencies]
 rand = "0.8.5"
 rand_chacha = "0.3"
 criterion = { version = "0.3", features = ["html_reports"] }
+serde_json = "1.0"
 
 [badges]
 maintenance = { status = "experimental" }
