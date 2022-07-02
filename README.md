@@ -1,3 +1,6 @@
+[![Workflow Status](https://github.com/FauconFan/fix_float/workflows/main/badge.svg)](https://github.com/FauconFan/fix_float/actions?query=workflow%3A%22main%22)
+![Maintenance](https://img.shields.io/badge/maintenance-experimental-blue.svg)
+
 # fix_float
 
 Default float types in rust doesn't implement the standard traits Ord and Hash, which is theoretically correct but very annoying. This crate tries to handle some restriction on float values in order to finally implement these traits.
@@ -101,3 +104,6 @@ let map: HashMap<ff64, ()> = HashMap::new();
 let set: HashSet<ff64> = HashSet::new();
 let heap: BinaryHeap<ff64> = BinaryHeap::new();
 ```
+
+Current version: 0.1.0
+License: MIT

@@ -6,6 +6,8 @@ authors = ["FauconFan <joseph0priou@gmail.com>"]
 description = "Fixed floating types that allows useful trait implementations and datastructures on float numbers"
 license = "MIT"
 repository = "https://github.com/FauconFan/fix_float"
+keywords = ["ff64", "ff32", "Ord", "Hash", "total_cmp"]
+categoriess = ["data-structures", "encoding"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,6 +18,10 @@ doc-comment = "0.3"
 rand = "0.8.5"
 rand_chacha = "0.3"
 criterion = { version = "0.3", features = ["html_reports"] }
+
+[badges]
+github = { repository = "FauconFan/fix_float" }
+maintenance = { status = "experimental" }
 
 [[bench]]
 name = "sort"
