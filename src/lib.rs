@@ -1,6 +1,6 @@
 //! Default float types in rust doesn't implement the standard traits Ord and Hash, which is theoretically correct but very annoying. This crate tries to handle some restriction on float values in order to finally implement these traits.
 //!
-//! Because we are talking about floating numbers, comparing and hashing are subtle. The first attempt is to create a wrapper around floating numbers such as ff64 and ff32, that prohibites edge values such as Nan (Not A Number) and +/- Infinite. This restriction is quite good because we would like to handle these edge cases seperataly and then concentrate on the 'happy path'.
+//! Because we are talking about floating numbers, comparing and hashing are subtle. The first attempt is to create a wrapper around floating numbers named ff64 and ff32, that prohibites edge values such as Nan (Not A Number) and +/- Infinite. This restriction is quite good because we would like to handle these edge cases seperataly and then concentrate on the 'happy path'.
 //!
 //! # Demo
 //!
@@ -31,6 +31,45 @@
 //!
 //! # Examples
 //!
+//! ```
+//! use fix_float::*;
+//!
+//! // inputs: A random list of float numbers
+//! // outputs: A tuple of three elements:
+//! //    .0: sorted list of fix floats numbers
+//! //    .1: numbers of NAN
+//! //    .2: numbers of INFINITY (positive or negative)
+//! fn double_triage(v: Vec<f64>) -> (Vec<ff64>, usize, usize) {
+//! 	let mut vff64 = Vec::new();
+//! 	let mut nb_nan = 0;
+//! 	let mut nb_infinity = 0;
+//!
+//! 	for &elem in &v {
+//! 		match ff64::try_from(elem) {
+//! 			Ok(x) => vff64.push(x),
+//! 			Err(ErrorTryFrom::CannotFixNan) => nb_nan += 1,
+//! 			Err(ErrorTryFrom::CannotFixInfinite) => nb_infinity += 1,
+//! 		}
+//! 	}
+//!
+//! 	vff64.sort();
+//!
+//! 	(vff64, nb_nan, nb_infinity)
+//! }
+//!
+//! # fn main() {
+//! # 	let v = vec![f64::NAN, 42.42, f64::INFINITY, 21.21, 84.84, f64::NAN, f64::NAN, f64::NEG_INFINITY];
+//! # 	let (sv, nb_nan, nb_infinity) = double_triage(v);
+//! #
+//! # 	assert_eq!(nb_nan, 3);
+//! # 	assert_eq!(nb_infinity, 2);
+//! # 	assert_eq!(sv.len(), 3);
+//! # 	assert_eq!(*sv[0], 21.21);
+//! # 	assert_eq!(*sv[1], 42.42);
+//! # 	assert_eq!(*sv[2], 84.84);
+//! # }
+//! ```
+//!
 //! This should work fine!
 //! ```
 //! # use fix_float::*;
@@ -56,7 +95,7 @@
 //! ```
 //!
 //! ```should_panic
-//! #use fix_float::*;
+//! # use fix_float::*;
 //! # fn main() {
 //! let a = ff64!(f64::NEG_INFINITY);
 //! # }
@@ -64,7 +103,7 @@
 //!
 //! # Useful Datastructures
 //!
-//! A direct consequence is that we can now use fix floats in useful datastructures such as HashMap, HashSet, BinaryHeap. This is very useful when it comes to graph algorithms for instance.
+//! A direct consequence is that we can now use fix floats in useful datastructures such as HashMap, HashSet, BinaryHeap. For instance, this is very useful when it comes to graph algorithms.
 //!
 //! ```
 //! # use std::collections::{HashMap, HashSet, BinaryHeap};
