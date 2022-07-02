@@ -1,5 +1,6 @@
 [![Workflow Status](https://github.com/FauconFan/fix_float/actions/workflows/main.yml/badge.svg)](https://github.com/FauconFan/fix_float/actions?query=workflow%3A%22main%22)
 [![Coverage Status](https://coveralls.io/repos/github/FauconFan/fix_float/badge.svg?branch=master)](https://coveralls.io/github/FauconFan/fix_float?branch=master)
+![Crates.io](https://img.shields.io/crates/l/fix_float)
 ![Maintenance](https://img.shields.io/badge/maintenance-experimental-blue.svg)
 
 # fix_float
@@ -50,21 +51,21 @@ use fix_float::*;
 //    .1: numbers of NAN
 //    .2: numbers of INFINITY (positive or negative)
 fn double_triage(v: Vec<f64>) -> (Vec<ff64>, usize, usize) {
-	let mut vff64 = Vec::new();
-	let mut nb_nan = 0;
-	let mut nb_infinity = 0;
+    let mut vff64 = Vec::new();
+    let mut nb_nan = 0;
+    let mut nb_infinity = 0;
 
-	for &elem in &v {
-		match ff64::try_from(elem) {
-			Ok(x) => vff64.push(x),
-			Err(ErrorTryFrom::CannotFixNan) => nb_nan += 1,
-			Err(ErrorTryFrom::CannotFixInfinity) => nb_infinity += 1,
-		}
-	}
+    for &elem in &v {
+        match ff64::try_from(elem) {
+            Ok(x) => vff64.push(x),
+            Err(ErrorTryFrom::CannotFixNan) => nb_nan += 1,
+            Err(ErrorTryFrom::CannotFixInfinity) => nb_infinity += 1,
+        }
+    }
 
-	vff64.sort();
+    vff64.sort();
 
-	(vff64, nb_nan, nb_infinity)
+    (vff64, nb_nan, nb_infinity)
 }
 
 ```
@@ -74,24 +75,22 @@ fn double_triage(v: Vec<f64>) -> (Vec<ff64>, usize, usize) {
 use fix_float::*;
 use rand;
 
-fn main() {
-	let mut v: Vec<ff64> = vec![];
+let mut v: Vec<ff64> = vec![];
 
-	for _ in 0..10 {
-		v.push(ff64!(rand::random::<f64>()));
-	}
+for _ in 0..10 {
+    v.push(ff64!(rand::random::<f64>()));
+}
 
-	println!("values:");
-	for &elem in &v {
-		println!("  {:.2}", *elem);
-	}
+println!("values:");
+for &elem in &v {
+    println!("  {:.2}", *elem);
+}
 
-	v.sort();
+v.sort();
 
-	println!("values sorted:");
-	for &elem in &v {
-		println!("  {:.2}", *elem);
-	}
+println!("values sorted:");
+for &elem in &v {
+    println!("  {:.2}", *elem);
 }
 ```
 
