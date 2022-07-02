@@ -1,6 +1,6 @@
 [package]
 name = "fix_float"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["FauconFan <joseph0priou@gmail.com>"]
 description = "Fixed floating types that allows useful trait implementations and datastructures on float numbers"
