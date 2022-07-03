@@ -104,5 +104,5 @@ let set: HashSet<ff64> = HashSet::new();
 let heap: BinaryHeap<ff64> = BinaryHeap::new();
 ```
 
-Current version: 0.1.3  
+Current version: 0.1.4  
 License: MIT
