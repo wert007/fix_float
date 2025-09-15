@@ -33,6 +33,14 @@ This wrapper implements:
  - PartialOrd
  - Ord
  - Hash
+ - Add
+ - Sub
+ - Mul
+ - Div
+ - AddAssign
+ - SubAssign
+ - MulAssign
+ - DivAssign
  - Deref<Target = ", stringify!($base), ">
  - TryFrom", "<", stringify!($base), ">
 
@@ -63,6 +71,11 @@ This wrapper implements:
                         Infinite => Some(ErrorTryFrom::CannotFixInfinity),
                         _ => None,
                     }
+                }
+
+                #[inline]
+                fn assert(x: $base) -> $new {
+                    Self::try_from(x).expect("Assertion failed")
                 }
 
                 #[inline]
@@ -97,9 +110,67 @@ This wrapper implements:
 
             impl PartialEq for $new {
                 #[inline]
-                #[must_use]
                 fn eq(&self, other: &Self) -> bool {
                     self.x == other.x
+                }
+            }
+
+            impl std::ops::Add for $new {
+                type Output = $new;
+                #[inline]
+                fn add(self, other: Self) -> $new {
+                    $new::assert(self.x + other.x)
+                }
+            }
+
+            impl std::ops::Sub for $new {
+                type Output = $new;
+                #[inline]
+                fn sub(self, other: Self) -> $new {
+                    $new::assert(self.x - other.x)
+                }
+            }
+
+            impl std::ops::Mul for $new {
+                type Output = $new;
+                #[inline]
+                fn mul(self, other: Self) -> $new {
+                    $new::assert(self.x * other.x)
+                }
+            }
+
+            impl std::ops::Div for $new {
+                type Output = $new;
+                #[inline]
+                fn div(self, other: Self) -> $new {
+                    $new::assert(self.x / other.x)
+                }
+            }
+            impl std::ops::AddAssign for $new {
+                #[inline]
+                fn add_assign(&mut self, other: Self) {
+                    *self = $new::assert(self.x + other.x);
+                }
+            }
+
+            impl std::ops::SubAssign for $new {
+                #[inline]
+                fn sub_assign(&mut self, other: Self) {
+                    *self = $new::assert(self.x - other.x);
+                }
+            }
+
+            impl std::ops::MulAssign for $new {
+                #[inline]
+                fn mul_assign(&mut self, other: Self) {
+                    *self = $new::assert(self.x * other.x);
+                }
+            }
+
+            impl std::ops::DivAssign for $new {
+                #[inline]
+                fn div_assign(&mut self, other: Self) {
+                    *self = $new::assert(self.x / other.x);
                 }
             }
 
@@ -107,7 +178,6 @@ This wrapper implements:
 
             impl PartialOrd for $new {
                 #[inline]
-                #[must_use]
                 fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
                     Self::my_partial_cmp(self, other)
                 }
@@ -115,7 +185,6 @@ This wrapper implements:
 
             impl Ord for $new {
                 #[inline]
-                #[must_use]
                 fn cmp(&self, other: &Self) -> Ordering {
                     Self::my_cmp(self, other)
                 }
@@ -141,7 +210,6 @@ This wrapper implements:
 
             impl From<$new> for $base {
                 #[inline]
-                #[must_use]
                 fn from(x: $new) -> Self {
                     x.x
                 }
@@ -160,7 +228,6 @@ This wrapper implements:
                 type Target = $base;
 
                 #[inline]
-                #[must_use]
                 fn deref(&self) -> &Self::Target {
                     &self.x
                 }
